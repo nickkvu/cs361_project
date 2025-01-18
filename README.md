@@ -1,2 +1,2 @@
-# cs361_project
-CS361 Course Project
+# <p>CS361 Course Project</p>
+<p>Nicholas Vu</p>
