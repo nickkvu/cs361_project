@@ -14,20 +14,48 @@ def convert_dec_to_bin(dec) :
 
 def file_convert_dec_to_bin(filename) :
     # store an array of all the numbers read in the file
-    nums = []
-    binarys = []
+    dec = []
+    bin = []
 
     #read the file line by line and store into the initialzed array
     file = open(filename, "r")
     for line in file :
-        nums.append(int(line))
+        dec.append(int(line))
     
     # use the array to get each number and convert it into binary
-    for i in nums :
-        binarys.append(convert_dec_to_bin(i))
+    for i in dec :
+        bin.append(convert_dec_to_bin(i))
 
     # return the array of numbers and array of binary values
-    return nums, binarys
+    return dec, bin
+
+def convert_bin_to_dec(bin) :
+    result = 0
+    exponent = 0    #keep track of the power of 2s
+
+    for digit in reversed(str(bin)) :
+        if digit == "1" :
+            result += 2**exponent
+        exponent += 1  #increment the exponent to handle the next digit
+    
+    return result
+
+def file_convert_bin_to_dec(filename) :
+    # store an array of all the numbers read in the file
+    bin = []
+    dec = []
+
+    #read the file line by line and store into the initialzed array
+    file = open(filename, "r")
+    for line in file :
+        bin.append(int(line))
+
+    # use the array to get each number and convert it into decimals
+    for i in bin :
+        dec.append(convert_bin_to_dec(i))
+
+    # return the array of numbers and array of binary values
+    return bin, dec
 
 # Home Page Screen:
 def home_page() :
@@ -84,7 +112,7 @@ def decimal_to_binary() :
         print("\n[List of Conversions] from " + filename)
         for i in range(len(dec)) :
             print("[Decimal]: " + str(dec[i]) + "\n[Binary]: " + str(bin[i]) + "\n")
-            
+
 
 def binary_to_decimal() :
     print(r""" 
@@ -99,6 +127,29 @@ def binary_to_decimal() :
     """)
     print("Would you like to enter a decimal to the CLI or enter the name of a file: \n")
     print("1. Manual Input\n2. File Input\n")
+    
+    input_process = int(input("Processing Option: "))       #select how to use the converter
+
+    if (input_process == 1) :
+        # Manually input a binary to convert into decimal
+        print("\nEnter a BINARY to convert it into its DECIMAL value!\n")
+        bin_num = input("[Binary]: ")
+
+        #Run the entered number into the binary-to-decimal converter
+        result = convert_bin_to_dec(bin_num)
+
+        print("[Decimal]: " + str(result))
+    
+    elif (input_process == 2) :
+        # use a file based input to convert a list of binary numbers to decimal
+        print("\nEnter the file name you wish to get DECIMAL values from!\n")
+        filename = input("[File]: ")
+
+        bin, dec = file_convert_bin_to_dec(filename)    #get a list of the binary numbers and the corresponding decimal numbers
+
+        print("\n[List of Conversions] from " + filename)
+        for i in range(len(dec)) :
+            print("[Binary]: " + str(bin[i]) + "\n[Decimal]: " + str(dec[i]) + "\n")
 
 
 def exit_page() :
@@ -116,7 +167,6 @@ def exit_page() :
 
 # Main Function:
 home_page()
-
 nav = int(input("User's Input: "))    # get user's entered input
 
 if(nav == 1) :
