@@ -71,6 +71,7 @@ def home_page() :
     """)
 
     print("Be able to quickly conversions with binary and decimal numbers!\nEnter an integer corresponding to navigation option you wish to chose.\n")
+    print("DISCLAIMER: A DECIMAL IS REFERED TO A WHOLE NUMBER IN THIS CONTEXT AS DECIMAL REFERS TO THE STANDARD BASE 10 SYSTEM\n")
     print("Navigation: ")
     print("1. Decimal-to-binary Converter\n2. Binary-to-decimal Converter\n3. Exit\n")
 
@@ -88,24 +89,35 @@ def decimal_to_binary() :
                                                                      |___/                                                
     """)
     print("Would you like to enter a decimal to the CLI or enter the name of a file: \n")
-    print("1. Manual Input\n2. File Input\n")
+    print("1. Manual Input\n2. File Input (from Working Directory)\n")
     
-    input_process = int(input("Processing Option: "))       #select how to use the converter
+    input_process = input("Processing Option: ")      #select how to use the converter
+    #error handling
+    while ((input_process != '1' and input_process != '2') or not input_process.isdigit()) :
+        input_process = input("Re-enter the Processing Option: ")
 
-    if (input_process == 1) :
+    if (input_process == '1') :
         # Manually input a decimal to convert into binary
         print("\nEnter a DECIMAL to convert it into its BINARY value!\n")
-        decimal_num = int(input("[Decimal]: "))
+        decimal_num = input("[Decimal]: ")
+
+        while (not decimal_num.isdigit()) :
+            decimal_num = input("INVALID: Re-enter [Decimal]: ")
+        
+        decimal_num = int(decimal_num)
 
         #Run the entered number into the decimal-to-binary converter
         result = convert_dec_to_bin(decimal_num)
 
-        print("[Binary]: " + result)
+        print("\n[Binary]: " + result)
     
-    elif (input_process == 2) :
+    elif (input_process == '2') :
         # use a file based input to convert a list of decimal numbers to binary
         print("\nEnter the file name you wish to get BINARY values from!\n")
         filename = input("[File]: ")
+
+        while(not os.path.isfile(filename)) :   # check to see if the file exist in the working directory
+            filename = input("INVALID: Re-enter [File]: ")
 
         dec, bin = file_convert_dec_to_bin(filename)    #get a list of the decimal numbers and the corresponding binary numbers
 
@@ -126,24 +138,33 @@ def binary_to_decimal() :
                                |___/                                                                                                                                  
     """)
     print("Would you like to enter a decimal to the CLI or enter the name of a file: \n")
-    print("1. Manual Input\n2. File Input\n")
+    print("1. Manual Input\n2. File Input (from Working Directory)\n")
     
-    input_process = int(input("Processing Option: "))       #select how to use the converter
+    input_process = input("Processing Option: ")      #select how to use the converter
+    #error handling
+    while ((input_process != '1' and input_process != '2') or not input_process.isdigit()) :
+        input_process = input("Re-enter the Processing Option: ")
 
-    if (input_process == 1) :
+    if (input_process == '1') :
         # Manually input a binary to convert into decimal
-        print("\nEnter a BINARY to convert it into its DECIMAL value!\n")
+        print("\nEnter a BINARY to convert it into its DECIMAL value! Make sure it has only 0's and 1's\n")
         bin_num = input("[Binary]: ")
+        #error handling:
+        while (not set(bin_num).issubset({'0', '1'})) :     # checks if the str has only 0's and 1's
+             bin_num = input("INVALID: Re-enter [Binary]: ")
 
         #Run the entered number into the binary-to-decimal converter
         result = convert_bin_to_dec(bin_num)
 
-        print("[Decimal]: " + str(result))
+        print("\n[Decimal]: " + str(result))
     
-    elif (input_process == 2) :
+    elif (input_process == '2') :
         # use a file based input to convert a list of binary numbers to decimal
         print("\nEnter the file name you wish to get DECIMAL values from!\n")
         filename = input("[File]: ")
+
+        while(not os.path.isfile(filename)) :   # check to see if the file exist in the working directory
+            filename = input("INVALID: Re-enter [File]: ")
 
         bin, dec = file_convert_bin_to_dec(filename)    #get a list of the binary numbers and the corresponding decimal numbers
 
@@ -166,19 +187,49 @@ def exit_page() :
 
 
 # Main Function:
-home_page()
-nav = int(input("User's Input: "))    # get user's entered input
+while(True) :
+    home_page()
+    nav = input("User's Input: ")    # get user's entered input
+    #error handling user input
+    while ((nav != '1' and nav !=  '2' and nav != '3') or not nav.isdigit()) :
+        nav = input("Re-enter User's Input: ")
+    
+    if(nav == '1') :
+        # Clear terminal and navigate to Decimal-to-Binary Converter Sreen
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        decimal_to_binary()
 
-if(nav == 1) :
-    # Clear terminal and navigate to Decimal-to-Binary Converter Sreen
-    os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
-    decimal_to_binary()
+        proceed = input("\nClick [Enter] to proceed back to home: ")
+        #error handle
+        while (proceed != "") :
+            proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        
 
-elif (nav == 2) :
-    # Clear terminal and navigate to Binary-to-Decimal Converter Sreen
-    os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
-    binary_to_decimal()
-elif(nav == 3) :
-    # exit the program
-    os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
-    exit_page()
+    elif (nav == '2') :
+        # Clear terminal and navigate to Binary-to-Decimal Converter Sreen
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        binary_to_decimal()
+
+        proceed = input("\nClick [Enter] to proceed back to home: ")
+        #error handle
+        while (proceed != "") :
+            proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        
+    elif(nav == '3') :
+        # exit the program
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        exit_page()
+        
+        exit_option = input("User's Input: ")
+        #error handling
+        while (exit_option != 'y' and exit_option != 'n') :
+            exit_option = input("Re-enter User's Input: ")
+        
+        if (exit_option != 'y') :
+            # if user wishes to stay in the application, route user back to the home page
+            os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        
+        else :
+            break
