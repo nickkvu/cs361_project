@@ -2,6 +2,7 @@
 # Author: Nicholas Vu
 
 import os
+import time
 
 def convert_dec_to_bin(dec) :
     result = ""
@@ -57,6 +58,11 @@ def file_convert_bin_to_dec(filename) :
     # return the array of numbers and array of binary values
     return bin, dec
 
+# log the conversion into the history file
+def log_conversion(input_val, converted_val, filename) :
+    with open(filename, "a") as file :
+        file.write(f"{input_val} {converted_val}\n")
+
 # Home Page Screen:
 def home_page() :
     # print home screen messages to terminal
@@ -73,7 +79,7 @@ def home_page() :
     print("Be able to quickly conversions with binary and decimal numbers!\nEnter an integer corresponding to navigation option you wish to chose.\n")
     print("DISCLAIMER: A DECIMAL IS REFERED TO A WHOLE NUMBER IN THIS CONTEXT AS DECIMAL REFERS TO THE STANDARD BASE 10 SYSTEM\n")
     print("Navigation: ")
-    print("1. Decimal-to-binary Converter\n2. Binary-to-decimal Converter\n3. Exit\n")
+    print("1. Decimal-to-binary Converter\n2. Binary-to-decimal Converter\n3. History\n4. Exit\n")
 
 def decimal_to_binary() :
     # print the decimal to binary converter screen messages to terminal
@@ -109,6 +115,9 @@ def decimal_to_binary() :
         #Run the entered number into the decimal-to-binary converter
         result = convert_dec_to_bin(decimal_num)
 
+        #log the result into the txt file
+        log_conversion(decimal_num, result, "history.txt")
+
         print("\n[Binary]: " + result)
     
     elif (input_process == '2') :
@@ -120,6 +129,10 @@ def decimal_to_binary() :
             filename = input("INVALID: Re-enter [File]: ")
 
         dec, bin = file_convert_dec_to_bin(filename)    #get a list of the decimal numbers and the corresponding binary numbers
+        
+        # log all conversions to the history file
+        for i in range(len(dec)) :
+            log_conversion(dec[i], bin[i], "history.txt")
 
         print("\n[List of Conversions] from " + filename)
         for i in range(len(dec)) :
@@ -156,6 +169,9 @@ def binary_to_decimal() :
         #Run the entered number into the binary-to-decimal converter
         result = convert_bin_to_dec(bin_num)
 
+        #log the result into the txt file
+        log_conversion(bin_num, result, "history.txt")
+
         print("\n[Decimal]: " + str(result))
     
     elif (input_process == '2') :
@@ -168,10 +184,26 @@ def binary_to_decimal() :
 
         bin, dec = file_convert_bin_to_dec(filename)    #get a list of the binary numbers and the corresponding decimal numbers
 
+        # log all conversions to the history file
+        for i in range(len(dec)) :
+            log_conversion(bin[i], dec[i], "history.txt")
+
         print("\n[List of Conversions] from " + filename)
         for i in range(len(dec)) :
             print("[Binary]: " + str(bin[i]) + "\n[Decimal]: " + str(dec[i]) + "\n")
 
+def history_page() :
+    print(r"""
+     _    _ _     _                   
+    | |  | (_)   | |                  
+    | |__| |_ ___| |_ ___  _ __ _   _ 
+    |  __  | / __| __/ _ \| '__| | | |
+    | |  | | \__ \ || (_) | |  | |_| |
+    |_|  |_|_|___/\__\___/|_|   \__, |
+                                __/ |
+                                |___/ 
+    """)
+    print("List of all conversions made by the user during this process:\n")
 
 def exit_page() :
     print(r""" 
@@ -185,13 +217,12 @@ def exit_page() :
     """)
     print("Are you sure you want to exit the program? (y/n)\n")
 
-
 # Main Function:
 while(True) :
     home_page()
     nav = input("User's Input: ")    # get user's entered input
     #error handling user input
-    while ((nav != '1' and nav !=  '2' and nav != '3') or not nav.isdigit()) :
+    while ((nav != '1' and nav != '2' and nav != '3' and nav != '4') or not nav.isdigit()) :
         nav = input("Re-enter User's Input: ")
     
     if(nav == '1') :
@@ -217,7 +248,37 @@ while(True) :
             proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
         
-    elif(nav == '3') :
+    elif (nav == '3') :
+        # Clear terminal and navigate to the history page
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        history_page()
+
+        # Microservice B: Histoy Implementation
+        # write to the pipe file for the history mircoservice (historypipe.txt)
+        with open("historypipe.txt", "w", encoding="utf-8") as file :
+            file.write("run")   # tell the microservice to get the history and print it
+        
+        print("Connecting to Microservice B: History...")
+        time.sleep(2)
+
+        # wait on the Microservice B
+        print("Requesting contents of history file\n")
+        while (True) :
+            with open("historypipe.txt", "r") as f :
+                print("RECEIVED LOGS:\n")
+                results = f.readlines()
+                for line in results :
+                    print(f"{line}")
+                break
+            time.sleep(0.5)
+        
+        proceed = input("\nClick [Enter] to proceed back to home: ")
+        #error handle
+        while (proceed != "") :
+            proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+
+    elif(nav == '4') :
         # exit the program
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
         exit_page()
@@ -229,7 +290,10 @@ while(True) :
         
         if (exit_option != 'y') :
             # if user wishes to stay in the application, route user back to the home page
-            os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+            os.system('cls' if os.name == 'nt' else 'clear')    # clear the terminal to make cleaner interface
         
         else :
+            # clear history for the next process
+            with open("history.txt", "w") as f:
+                pass  # Opening in 'w' mode clears the file
             break
