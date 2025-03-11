@@ -4,6 +4,57 @@
 import os
 import time
 
+# Function to get number type
+def get_type(prompt):
+    while True:
+        # Prompt user for input
+        number_type = input(prompt)
+        if number_type in ['int', 'float']:
+            return number_type
+        # Print error if user did not type valid number type
+        else: 
+            print("Erorr: Invalid input. Enter int or float")
+
+# Function get number type
+def get_number(prompt, number_type):
+    while True:
+        try:
+            # Prompt user for a number
+            number = input(prompt)
+            if (number_type == 'int'):
+                return int(number)
+            elif (number_type == 'float'):
+                return float(number)
+            
+        # Print error if user didn't enter int or float
+        except ValueError:
+            if (number_type == 'int'):
+                print("ERROR: Please enter an integer")
+            else:
+                print("ERROR: Please enter a number")
+
+# Function get decimal place
+def get_decimal(prompt, number_type):
+    while True:
+        try:
+            # Prompt user for decimal place
+            decimal = int(input(prompt))
+
+            # Reprompt user if they entered invalid decimal place
+            if (number_type == 'int' and decimal != 0):
+                print("ERROR: Enter 0 for integer")
+                continue
+            if (number_type == 'float' and decimal < 1):
+                print("ERROR: Enter a number greater than 0 for float")
+                continue
+
+            # Return if the input was valid
+            return decimal
+        
+        # Print error if user didn't enter number
+        except ValueError:
+            print("Error: Please enter a valid decimal place")
+
 def convert_dec_to_bin(dec) :
     result = ""
 
@@ -103,22 +154,71 @@ def decimal_to_binary() :
         input_process = input("Re-enter the Processing Option: ")
 
     if (input_process == '1') :
-        # Manually input a decimal to convert into binary
-        print("\nEnter a DECIMAL to convert it into its BINARY value!\n")
-        decimal_num = input("[Decimal]: ")
+        # ask if you user would like ther generate a random number: 
+        input_type = input("\nDo you want to generate a random number for the conversion? (y/n): ")
+        if (input_type == "y") :
+            minimum = get_number("\nEnter a minimum for your random number: ", "int")
+            maximum = get_number("Enter a maximum for your random number: ", "int")
+            # dont ask for option to choose from int or float, since my converter only works with ints
+            # Combine user inputs as a csv string
+            data = ["int", minimum, maximum, 0]
+            csv_data = ",".join(map(str, data))
 
-        while (not decimal_num.isdigit()) :
-            decimal_num = input("INVALID: Re-enter [Decimal]: ")
+            print("\nWriting data...")
+            # Sleep for 4 seconds
+            for i in range(3):
+                print(".")
+                time.sleep(1)
+
+            with open("data.csv", "w") as file:
+                # Write csv string into data file
+                file.write(f"{csv_data}")
+                
+            with open("data.csv", "r") as file:
+                # Read data file
+                file_string = file.readline().rstrip()
+
+            # Wait to read correct input from file
+            while True:
+                with open("data.csv", "r") as file:
+                    file_string = file.readline().rstrip()
+
+                if file_string != csv_data:
+                    break  # Exit the loop when the file changes
+
+                print(".")
+                time.sleep(2)
+                
+            # Print random generated number to program
+            print(f"Generated random decimal number between {minimum} and {maximum}: {file_string}")
+            
+            decimal_num = int(file_string)
+
+            #Run the entered number into the decimal-to-binary converter
+            result = convert_dec_to_bin(decimal_num)
+
+            #log the result into the txt file
+            log_conversion(decimal_num, result, "history.txt")
+
+            print("\n[Binary]: " + result)
         
-        decimal_num = int(decimal_num)
+        else :
+            # Manually input a decimal to convert into binary
+            print("\nEnter a DECIMAL to convert it into its BINARY value!\n")
+            decimal_num = input("[Decimal]: ")
 
-        #Run the entered number into the decimal-to-binary converter
-        result = convert_dec_to_bin(decimal_num)
+            while (not decimal_num.isdigit()) :
+                decimal_num = input("INVALID: Re-enter [Decimal]: ")
+            
+            decimal_num = int(decimal_num)
 
-        #log the result into the txt file
-        log_conversion(decimal_num, result, "history.txt")
+            #Run the entered number into the decimal-to-binary converter
+            result = convert_dec_to_bin(decimal_num)
 
-        print("\n[Binary]: " + result)
+            #log the result into the txt file
+            log_conversion(decimal_num, result, "history.txt")
+
+            print("\n[Binary]: " + result)
     
     elif (input_process == '2') :
         # use a file based input to convert a list of decimal numbers to binary
