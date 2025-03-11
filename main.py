@@ -269,6 +269,37 @@ def quick_ref_page() :
             break
         time.sleep(0.5)
 
+def hexadecimal_page() :
+    print(r"""
+     _    _                    _           _                 _    _____                          _            
+    | |  | |                  | |         (_)               | |  / ____|                        | |           
+    | |__| | _____  ____ _  __| | ___  ___ _ _ __ ___   __ _| | | |     ___  _ ____   _____ _ __| |_ ___ _ __ 
+    |  __  |/ _ \ \/ / _` |/ _` |/ _ \/ __| | '_ ` _ \ / _` | | | |    / _ \| '_ \ \ / / _ \ '__| __/ _ \ '__|
+    | |  | |  __/>  < (_| | (_| |  __/ (__| | | | | | | (_| | | | |___| (_) | | | \ V /  __/ |  | ||  __/ |   
+    |_|  |_|\___/_/\_\__,_|\__,_|\___|\___|_|_| |_| |_|\__,_|_|  \_____\___/|_| |_|\_/ \___|_|   \__\___|_|   
+    """)
+    print("\nEnter a DECIMAL to convert it into its HEXADECIMAL value!\n")
+    decimal_num = input("[Decimal]: ")
+
+    # Microservice D: Hexadecimal Converter (Decimal to Hexidecimal)
+    with open("hexpipe.txt", "w", encoding="utf-8") as file :
+        file.write(f"run\n{decimal_num}")   # tell the microservice to get the history and print it
+
+    print("\nConnecting to Microservice D: Hexadecimal Converter...")
+    time.sleep(2)
+
+    # wait on the Microservice D
+    print(f"Requesting hexadecimal conversion for {decimal_num} from Microservice D server\n")
+    while (True) :
+        with open("hexpipe.txt", "r") as f :
+            result = f.read().strip()
+            if (result == "invalid") :
+                print(f"{decimal_num} is an INVALID input\n")
+            else :
+                print(f"Recieved Hexadecimal result: {result}")
+            break
+        time.sleep(0.5)
+
 
 def exit_page() :
     print(r""" 
@@ -335,8 +366,18 @@ while(True) :
             proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
 
+    elif (nav == '5') :
+        # Clear terminal and navigate to the hexadeciaml page page
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        hexadecimal_page()
+        
+        proceed = input("\nClick [Enter] to proceed back to home: ")
+        #error handle
+        while (proceed != "") :
+            proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
 
-    elif(nav == '6') :
+    elif (nav == '6') :
         # exit the program
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
         exit_page()
@@ -360,5 +401,8 @@ while(True) :
                 pass  # Opening in 'w' mode clears the file
 
             with open("qrefpipe.txt", "w") as f:
+                pass  # Opening in 'w' mode clears the file
+
+            with open("hexpipe.txt", "w") as f:
                 pass  # Opening in 'w' mode clears the file
             break
