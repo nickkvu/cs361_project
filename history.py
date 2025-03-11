@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
         if content :    # determine if there is content that exists in the pipe
             if (content[0] == "run") :
-                print("Receiving history request")
+                print("Receiving history request\n")
                 with open("history.txt", "r") as f :    # read the current state of the history file
                     results = f.readlines()     # read all the lines in the history.txt file
                 # with the history results print it back to the pipe with added formatting
@@ -21,7 +21,7 @@ if __name__ == "__main__":
                 with open("historypipe.txt", "w", encoding="utf-8") as f :
                     for line in formatted_results :
                         f.write(f"{line}\n")
-                print("Histoy contents have bene written to the historypipe.txt")
+                print("Histoy contents have bene written to the historypipe.txt\n")
 
         time.sleep(1)
 

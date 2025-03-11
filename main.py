@@ -79,7 +79,7 @@ def home_page() :
     print("Be able to quickly conversions with binary and decimal numbers!\nEnter an integer corresponding to navigation option you wish to chose.\n")
     print("DISCLAIMER: A DECIMAL IS REFERED TO A WHOLE NUMBER IN THIS CONTEXT AS DECIMAL REFERS TO THE STANDARD BASE 10 SYSTEM\n")
     print("Navigation: ")
-    print("1. Decimal-to-binary Converter\n2. Binary-to-decimal Converter\n3. History\n4. Exit\n")
+    print("1. Decimal-to-binary Converter\n2. Binary-to-decimal Converter\n3. History\n4. Quick Reference\n5. Hexadeciaml Converter\n6. Exit\n")
 
 def decimal_to_binary() :
     # print the decimal to binary converter screen messages to terminal
@@ -204,6 +204,71 @@ def history_page() :
                                 |___/ 
     """)
     print("List of all conversions made by the user during this process:\n")
+    
+    # Microservice B: Histoy Implementation
+        # write to the pipe file for the history mircoservice (historypipe.txt)
+    with open("historypipe.txt", "w", encoding="utf-8") as file :
+        file.write("run")   # tell the microservice to get the history and print it
+    
+    print("Connecting to Microservice B: History...")
+    time.sleep(2)
+
+    # wait on the Microservice B
+    print("Requesting contents of history file from Microservice B server\n")
+    while (True) :
+        with open("historypipe.txt", "r") as f :
+            print("RECEIVED LOGS:\n")
+            results = f.readlines()
+            for line in results :
+                print(f"{line}")
+            break
+        time.sleep(0.5)
+
+
+def quick_ref_page() :
+    print(r""" 
+   ____        _      _      _____       __                             
+  / __ \      (_)    | |    |  __ \     / _|                            
+ | |  | |_   _ _  ___| | __ | |__) |___| |_ ___ _ __ ___ _ __   ___ ___ 
+ | |  | | | | | |/ __| |/ / |  _  // _ \  _/ _ \ '__/ _ \ '_ \ / __/ _ \
+ | |__| | |_| | | (__|   <  | | \ \  __/ ||  __/ | |  __/ | | | (_|  __/
+  \___\_\\__,_|_|\___|_|\_\ |_|  \_\___|_| \___|_|  \___|_| |_|\___\___|                                                                                                                             
+    """)
+    print("Displaying commonly used binary and decimal conversions (0-10) which can be used as a quick reference guide.")
+
+    # Microservice C: Quick Reference
+
+    # ask user if they wish to store the quick refernece data into a text file
+    quick_ref_option = input("Would you like to save the quick reference list into a file? (y/n): ")      #select how to use the converter
+    #error handling
+    while (quick_ref_option != 'y' and quick_ref_option != 'n') :
+            quick_ref_option = input("Re-enter User's Input: ")
+    
+    if (quick_ref_option == 'y') :
+        # write to the pipe file for the requick ref mircoservice (qrefpipe.txt)
+        with open("qrefpipe.txt", "w", encoding="utf-8") as file :
+            file.write("run save")   # tell the microservice to get the quick reference with the option to save it to a file
+    
+    elif (quick_ref_option == 'n') :
+        # write to the pipe file for the requick ref mircoservice (qrefpipe.txt)
+        with open("qrefpipe.txt", "w", encoding="utf-8") as file :
+            file.write("run nosave")   # tell the microservice to get the quick reference with the option to save it to a file
+
+    
+    print("\nConnecting to Microservice C: Quick Reference...")
+    time.sleep(2)
+
+    # wait on Microsercive C (by this point, either option should supply the same response in the pipe file)
+    print("Requesting quick reference content from Microservice C server\n")
+    while (True) :
+        with open("qrefpipe.txt", "r") as f :
+            print("COMMON CONVERSIONS (0-10):\n")
+            results = f.readlines()
+            for line in results :
+                print(f"{line}")
+            break
+        time.sleep(0.5)
+
 
 def exit_page() :
     print(r""" 
@@ -222,7 +287,7 @@ while(True) :
     home_page()
     nav = input("User's Input: ")    # get user's entered input
     #error handling user input
-    while ((nav != '1' and nav != '2' and nav != '3' and nav != '4') or not nav.isdigit()) :
+    while ((nav != '1' and nav != '2' and nav != '3' and nav != '4' and nav != '5' and nav != '6' and nav != '7') or not nav.isdigit()) :
         nav = input("Re-enter User's Input: ")
     
     if(nav == '1') :
@@ -252,25 +317,6 @@ while(True) :
         # Clear terminal and navigate to the history page
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
         history_page()
-
-        # Microservice B: Histoy Implementation
-        # write to the pipe file for the history mircoservice (historypipe.txt)
-        with open("historypipe.txt", "w", encoding="utf-8") as file :
-            file.write("run")   # tell the microservice to get the history and print it
-        
-        print("Connecting to Microservice B: History...")
-        time.sleep(2)
-
-        # wait on the Microservice B
-        print("Requesting contents of history file\n")
-        while (True) :
-            with open("historypipe.txt", "r") as f :
-                print("RECEIVED LOGS:\n")
-                results = f.readlines()
-                for line in results :
-                    print(f"{line}")
-                break
-            time.sleep(0.5)
         
         proceed = input("\nClick [Enter] to proceed back to home: ")
         #error handle
@@ -278,7 +324,19 @@ while(True) :
             proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
 
-    elif(nav == '4') :
+    elif (nav == '4') :
+        # Clear terminal and navigate to the quick reference page
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+        quick_ref_page()
+
+        proceed = input("\nClick [Enter] to proceed back to home: ")
+        #error handle
+        while (proceed != "") :
+            proceed = input("\nTry Again. Click [Enter] to proceed back to home: ")
+        os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
+
+
+    elif(nav == '6') :
         # exit the program
         os.system('cls' if os.name == 'nt' else 'clear')    #clear the terminal to make cleaner interface
         exit_page()
@@ -295,5 +353,12 @@ while(True) :
         else :
             # clear history for the next process
             with open("history.txt", "w") as f:
+                pass  # Opening in 'w' mode clears the file
+
+            # clear all other pipe files for next process start up
+            with open("historypipe.txt", "w") as f:
+                pass  # Opening in 'w' mode clears the file
+
+            with open("qrefpipe.txt", "w") as f:
                 pass  # Opening in 'w' mode clears the file
             break
